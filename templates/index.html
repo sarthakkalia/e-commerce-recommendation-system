@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Real-Time Recommendation System</h1>
+
+    <form action="/get_recommendations" method="get">
+        <label for="user_id">User ID:</label>
+        <input type="text" id="user_id" name="user_id" required><br><br>
+
+        <label for="num">Number of Recommendations:</label>
+        <input type="text" id="num" name="num" value="5" required><br><br>
+
+        <button type="submit">Get Recommendations</button>
+    </form>
+
+    <div class="results" id="recommendations"></div>
+
+    <script>
+        // This function will display the result on the page
+        async function displayRecommendations(user_id, num) {
+            const response = await fetch(`/recommend?user_id=${user_id}&num=${num}`);
+            const data = await response.json();
+
+            if (data.error) {
+                document.getElementById('recommendations').innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+            } else {
+                let products = data.recommended_products.join(", ");
+                document.getElementById('recommendations').innerHTML = `<p><strong>Recommended Products for User ${data.user_id}:</strong> ${products}</p>`;
+            }
+        }
+
+        // This function listens for the form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const user_id = document.getElementById('user_id').value;
+            const num = document.getElementById('num').value;
+
+            displayRecommendations(user_id, num);
+        });
+    </script>
+
+</body>
+</html>
